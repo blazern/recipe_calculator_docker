@@ -16,12 +16,11 @@ RUN apt-get update && \
     apt-get install -y \
         build-essential \
         libpq-dev \
-        git \
         libssl-dev \
         pkg-config
 
 RUN cargo install diesel_cli --no-default-features --features postgres
-RUN git clone https://github.com/blazern/recipe_calculator_server.git
+COPY recipe_calculator_server recipe_calculator_server/
 WORKDIR /recipe_calculator_server
 RUN diesel migration run --database-url="$PSQL_URL_USER_ADMIN"
 
