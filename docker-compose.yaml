@@ -5,16 +5,16 @@ services:
       context: ./db
       args:
         - USERS_PASSWORD=${DB_USERS_PASSWORD:?db users password must be set}
-    ports:
-      - "8001:5432"
+    volumes:
+        - ${DB_FILES_PATH?db files path must be specified so that you never loose them}:/var/lib/postgresql/data
   server_app:
     build:
       context: ./server-app
       args:
         - VK_SERVER_TOKEN=${VK_SERVER_TOKEN:?vk server token must be set}
-        - PSQL_URL_USER_ADMIN=postgres://recipe_calculator_admin:${DB_USERS_PASSWORD}@db:5432/recipe_calculator_main
-        - PSQL_URL_USER_SERVER=postgres://recipe_calculator_server:${DB_USERS_PASSWORD}@db:5432/recipe_calculator_main
-        - PSQL_URL_USER_CLIENT=postgres://recipe_calculator_client:${DB_USERS_PASSWORD}@db:5432/recipe_calculator_main
+        - PSQL_URL_USER_ADMIN=postgres://recipe_calculator_admin:${DB_USERS_PASSWORD}@db/recipe_calculator_main
+        - PSQL_URL_USER_SERVER=postgres://recipe_calculator_server:${DB_USERS_PASSWORD}@db/recipe_calculator_main
+        - PSQL_URL_USER_CLIENT=postgres://recipe_calculator_client:${DB_USERS_PASSWORD}@db/recipe_calculator_main
         - SERVER_ADDRESS=127.0.0.1:8765
     depends_on:
       - db
