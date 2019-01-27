@@ -3,7 +3,7 @@ FROM certbot/certbot:v0.30.0
 # We'll attempt to update the certs at 12:00 each day.
 ARG CRONTAB_RENEWAL_TIME="0 12 * * *"
 
-# The Supercronig part is taken from https://github.com/Cethy/alpine-supercronic.
+# The Supercronic part is taken from https://github.com/Cethy/alpine-supercronic.
 # Thanks, @Cethy!
 ENV SUPERCRONIC_VERSION="v0.1.6" \
     SUPERCRONIC_PACKAGE=supercronic-linux-amd64
