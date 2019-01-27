@@ -24,8 +24,35 @@ services:
         - LIVE_DB_HOSTNAME=db
         - TEST_DB_HOSTNAME=db_for_tests
         - DB_USERS_PASSWORD=${DB_USERS_PASSWORD:?db users password must be set}
-        - SERVER_ADDRESS=127.0.0.1:8765
+        - SERVER_ADDRESS=server_app:8765
     depends_on:
       - db
       - db_for_tests
     restart: always
+
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        - LOCAL_SERVER_ADDRESS=server_app:8765
+        - GLOBAL_SERVER_ADDRESS=${GLOBAL_SERVER_ADDRESS:?global server address must be set}
+        - DHPARAM_PATH=/etc/keys/dhparam-2048.pem
+        - CERTIFICATE_PATH=/etc/keys/fullchain.pem
+        - CERTIFICATE_KEY_PATH=/etc/keys/privkey.pem
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${PATH_TO_KEYS:?}/dhparam-2048.pem:/etc/keys/dhparam-2048.pem
+      - ${PATH_TO_KEYS:?}/fullchain.pem:/etc/keys/fullchain.pem
+      - ${PATH_TO_KEYS:?}/privkey.pem:/etc/keys/privkey.pem
+    depends_on:
+      - server_app
+
+  certificate-renewer:
+    build:
+      context: ./certificate-renewer
+    volumes:
+      - ${CERTBOT_CONFIG_DIR:?}:/etc/letsencrypt
+      - ${CERTBOT_WORK_DIR:?}:/var/lib/letsencrypt
+      - ${CERTBOT_LOG_DIR:?}:/var/logs/letsencrypt

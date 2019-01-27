@@ -1,4 +1,4 @@
-FROM rust:1.26.0
+FROM rust:1.32.0
 
 # Declare all expected args
 ARG VK_SERVER_TOKEN
