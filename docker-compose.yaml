@@ -12,9 +12,12 @@ services:
     build:
       context: ./db-for-tests
       args:
-        - LIVE_DB_PATH=/live_db_files/
+        - LIVE_DB_PATH=/live_db_files
     volumes:
-        - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/live_db_files/
+        - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/live_db_files
+    depends_on:
+      - db
+    restart: always
 
   server_app:
     build:
