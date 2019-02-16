@@ -5,6 +5,8 @@ services:
       context: ./db
       args:
         - USERS_PASSWORD=${DB_USERS_PASSWORD:?db users password must be set}
+    networks:
+      - internal-network
     volumes:
         - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/var/lib/postgresql/data
 
@@ -13,6 +15,8 @@ services:
       context: ./db-for-tests
       args:
         - LIVE_DB_PATH=/live_db_files
+    networks:
+      - internal-network
     volumes:
         - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/live_db_files
     depends_on:
@@ -28,6 +32,9 @@ services:
         - TEST_DB_HOSTNAME=db_for_tests
         - DB_USERS_PASSWORD=${DB_USERS_PASSWORD:?db users password must be set}
         - SERVER_ADDRESS=server_app:8765
+    networks:
+      - internal-network
+      - external-network
     depends_on:
       - db
       - db_for_tests
@@ -42,6 +49,9 @@ services:
         - DHPARAM_PATH=/etc/keys/dhparam-2048.pem
         - CERTIFICATE_PATH=/etc/keys/fullchain.pem
         - CERTIFICATE_KEY_PATH=/etc/keys/privkey.pem
+    networks:
+      - internal-network
+      - external-network
     ports:
       - "80:80"
       - "443:443"
@@ -55,7 +65,17 @@ services:
   certificate_renewer:
     build:
       context: ./certificate-renewer
+    networks:
+      - internal-network
+      - external-network
     volumes:
       - ${CERTBOT_CONFIG_DIR:?}:/etc/letsencrypt
       - ${CERTBOT_WORK_DIR:?}:/var/lib/letsencrypt
       - ${CERTBOT_LOG_DIR:?}:/var/logs/letsencrypt
+
+networks:
+  internal-network:
+    driver: bridge
+    internal: true
+  external-network:
+    driver: bridge
