@@ -52,7 +52,7 @@ services:
     depends_on:
       - server_app
 
-  certificate-renewer:
+  certificate_renewer:
     build:
       context: ./certificate-renewer
     volumes:
