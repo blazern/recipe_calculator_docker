@@ -22,18 +22,9 @@ RUN apt-get update && \
         libssl-dev \
         pkg-config
 
-# Install Diesel
-RUN cargo install diesel_cli --no-default-features --features postgres
-
 # Copy the actual server app code and cd into its dir
 COPY recipe_calculator_server recipe_calculator_server/
 WORKDIR /recipe_calculator_server
-
-# Set Rust's backtraces to be printed on panics
-ENV RUST_BACKTRACE 1
-
-# Build a release binary
-RUN cargo build --release
 
 # Declare live and testing DB urls
 ARG PSQL_LIVE_URL_USER_SERVER=postgres://recipe_calculator_server:$DB_USERS_PASSWORD@$LIVE_DB_HOSTNAME/recipe_calculator_main
@@ -60,6 +51,15 @@ RUN echo { >> testing_config.json \
   && echo } >> testing_config.json
 RUN echo "testing config: " && cat testing_config.json
 
+# Set Rust's backtraces to be printed on panics
+ENV RUST_BACKTRACE 1
+
+# Install Diesel
+RUN cargo install diesel_cli --no-default-features --features postgres
+
+# Build a release binary
+RUN cargo build --release
+
 # Build tests without running them so that if one of them fails we
 # wouldn't need to rebuild all tests to restart their run.
 RUN cargo test --no-run
@@ -72,7 +72,11 @@ ENV SERVER_ADDRESS $SERVER_ADDRESS
 
 # Migrate testing DB and run tests on it,
 # then migrate live DB and start the server app.
-CMD diesel migration run --database-url="$PSQL_TEST_URL_USER_ADMIN" && \
+CMD echo "testing config: " && cat testing_config.json && \
+    echo "live config: " && cat config.json && \
+    echo "PSQL_TEST_URL_USER_ADMIN: $PSQL_TEST_URL_USER_ADMIN\n" && \
+    echo "PSQL_LIVE_URL_USER_ADMIN: $PSQL_LIVE_URL_USER_ADMIN\n" && \
+    diesel migration run --database-url="$PSQL_TEST_URL_USER_ADMIN" && \
     cargo test && \
     diesel migration run --database-url="$PSQL_LIVE_URL_USER_ADMIN" && \
     target/release/recipe_calculator_bin --config config.json --address $SERVER_ADDRESS
