@@ -59,6 +59,7 @@ services:
       - ${PATH_TO_KEYS:?}/dhparam-2048.pem:/etc/keys/dhparam-2048.pem
       - ${PATH_TO_KEYS:?}/fullchain.pem:/etc/keys/fullchain.pem
       - ${PATH_TO_KEYS:?}/privkey.pem:/etc/keys/privkey.pem
+      - ${CERTBOT_DATA_DIR:?}:/data/letsencrypt
     depends_on:
       - server_app
 
@@ -72,6 +73,7 @@ services:
       - ${CERTBOT_CONFIG_DIR:?}:/etc/letsencrypt
       - ${CERTBOT_WORK_DIR:?}:/var/lib/letsencrypt
       - ${CERTBOT_LOG_DIR:?}:/var/logs/letsencrypt
+      - ${CERTBOT_DATA_DIR:?}:/data/letsencrypt
 
 networks:
   internal-network:
