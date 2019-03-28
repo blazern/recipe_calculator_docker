@@ -56,9 +56,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ${PATH_TO_KEYS:?}/dhparam-2048.pem:/etc/keys/dhparam-2048.pem
-      - ${PATH_TO_KEYS:?}/fullchain.pem:/etc/keys/fullchain.pem
-      - ${PATH_TO_KEYS:?}/privkey.pem:/etc/keys/privkey.pem
+      - ${PATH_TO_DHPARAM:?}/dhparam-2048.pem:/etc/keys/dhparam-2048.pem
+      - ${PATH_TO_CERTS:?}/fullchain.pem:/etc/keys/fullchain.pem
+      - ${PATH_TO_CERTS:?}/privkey.pem:/etc/keys/privkey.pem
       - ${CERTBOT_DATA_DIR:?}:/data/letsencrypt
     depends_on:
       - server_app
