@@ -54,9 +54,6 @@ RUN echo "testing config: " && cat testing_config.json
 # Set Rust's backtraces to be printed on panics
 ENV RUST_BACKTRACE 1
 
-# Install Diesel
-RUN cargo install diesel_cli --no-default-features --features postgres
-
 # Build a release binary
 RUN cargo build --release
 
@@ -76,7 +73,5 @@ CMD echo "testing config: " && cat testing_config.json && \
     echo "live config: " && cat config.json && \
     echo "PSQL_TEST_URL_USER_ADMIN: $PSQL_TEST_URL_USER_ADMIN\n" && \
     echo "PSQL_LIVE_URL_USER_ADMIN: $PSQL_LIVE_URL_USER_ADMIN\n" && \
-    diesel migration run --database-url="$PSQL_TEST_URL_USER_ADMIN" && \
     cargo test && \
-    diesel migration run --database-url="$PSQL_LIVE_URL_USER_ADMIN" && \
     target/release/recipe_calculator_bin --config config.json --address $SERVER_ADDRESS
