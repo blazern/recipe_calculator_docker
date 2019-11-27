@@ -1,3 +1,0 @@
-[submodule "server-app/recipe_calculator_server"]
-	path = server-app/recipe_calculator_server
-	url = https://github.com/blazern/recipe_calculator_server.git

@@ -8,7 +8,7 @@ services:
     networks:
       - internal-network
     volumes:
-        - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/var/lib/postgresql/data
+      - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/var/lib/postgresql/data
 
   db_for_tests:
     build:
@@ -18,7 +18,7 @@ services:
     networks:
       - internal-network
     volumes:
-        - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/live_db_files
+      - ${DB_FILES_PATH:?db files path must be specified so that you never loose them}:/live_db_files
     depends_on:
       - db
     restart: always
@@ -32,9 +32,14 @@ services:
         - TEST_DB_HOSTNAME=db_for_tests
         - DB_USERS_PASSWORD=${DB_USERS_PASSWORD:?db users password must be set}
         - SERVER_ADDRESS=server_app:8765
+        - BINARY_PATH_TESTS=/server_binaries/tests
+        - BINARY_PATH_APP=/server_binaries/app
     networks:
       - internal-network
       - external-network
+    volumes:
+      - ${BINARY_PATH_TESTS:?path to rust binaries must be set}:/server_binaries/tests
+      - ${BINARY_PATH_APP:?path to rust binaries must be set}:/server_binaries/app
     depends_on:
       - db
       - db_for_tests
