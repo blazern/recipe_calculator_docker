@@ -37,7 +37,8 @@ ARG PSQL_TEST_URL_USER_CLIENT=postgres://recipe_calculator_client:$DB_USERS_PASS
 RUN echo { >> config.json \
   && echo \"vk_server_token\":\"$VK_SERVER_TOKEN\", >> config.json \
   && echo \"psql_url_user_server\":\"$PSQL_LIVE_URL_USER_SERVER\", >> config.json \
-  && echo \"psql_url_user_client\":\"$PSQL_LIVE_URL_USER_CLIENT\" >> config.json \
+  && echo \"psql_url_user_client\":\"$PSQL_LIVE_URL_USER_CLIENT\", >> config.json \
+  && echo \"db_connection_attempts_timeout_seconds\": 180 >> config.json \
   && echo } >> config.json
 RUN echo "live config: " && cat config.json
 
@@ -45,7 +46,8 @@ RUN echo "live config: " && cat config.json
 RUN echo { >> testing_config.json \
   && echo \"vk_server_token\":\"$VK_SERVER_TOKEN\", >> testing_config.json \
   && echo \"psql_url_user_server\":\"$PSQL_TEST_URL_USER_SERVER\", >> testing_config.json \
-  && echo \"psql_url_user_client\":\"$PSQL_TEST_URL_USER_CLIENT\" >> testing_config.json \
+  && echo \"psql_url_user_client\":\"$PSQL_TEST_URL_USER_CLIENT\", >> testing_config.json \
+  && echo \"db_connection_attempts_timeout_seconds\": 180 >> testing_config.json \
   && echo } >> testing_config.json
 RUN echo "testing config: " && cat testing_config.json
 
@@ -59,8 +61,7 @@ ENV BINARY_PATH_TESTS $BINARY_PATH_TESTS
 ENV BINARY_PATH_APP $BINARY_PATH_APP
 
 # Run tests and start the server app.
-CMD echo "server container is going to sleep for 20 seconds" && sleep 20 && \
-    echo "testing config: " && cat testing_config.json && \
+CMD echo "testing config: " && cat testing_config.json && \
     echo "live config: " && cat config.json && \
     $BINARY_PATH_TESTS && \
     $BINARY_PATH_APP --config config.json --address $SERVER_ADDRESS
