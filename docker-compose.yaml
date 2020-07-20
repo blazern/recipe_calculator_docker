@@ -35,12 +35,14 @@ services:
         - SERVER_ADDRESS=server_app:8765
         - BINARY_PATH_TESTS=/server_binaries/tests
         - BINARY_PATH_APP=/server_binaries/app
+        - LOG4RS_LOGS_TARGET_PATH=/logs.txt
     networks:
       - internal-network
       - external-network
     volumes:
       - ${BINARY_PATH_TESTS:?path to rust binaries must be set}:/server_binaries/tests
       - ${BINARY_PATH_APP:?path to rust binaries must be set}:/server_binaries/app
+      - ${LOG4RS_LOGS_TARGET_PATH:?path to where log4rs will put logs}:/logs.txt
     depends_on:
       - db
       - db_for_tests
@@ -87,3 +89,4 @@ networks:
     internal: true
   external-network:
     driver: bridge
+

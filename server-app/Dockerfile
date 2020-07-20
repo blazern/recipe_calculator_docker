@@ -9,6 +9,7 @@ ARG TEST_DB_HOSTNAME
 ARG SERVER_ADDRESS
 ARG BINARY_PATH_TESTS
 ARG BINARY_PATH_APP
+ARG LOG4RS_LOGS_TARGET_PATH
 
 # Test that all declared args are provided
 RUN test $VK_SERVER_TOKEN \
@@ -18,7 +19,8 @@ RUN test $VK_SERVER_TOKEN \
  && test $TEST_DB_HOSTNAME \
  && test $SERVER_ADDRESS \
  && test $BINARY_PATH_TESTS \
- && test $BINARY_PATH_APP
+ && test $BINARY_PATH_APP \
+ && test $LOG4RS_LOGS_TARGET_PATH
 
 # Install all needed dependencies
 RUN apt-get update && \
@@ -70,10 +72,13 @@ ENV TESTING_CONFIG_FILE_PATH testing_config.json
 ENV SERVER_ADDRESS $SERVER_ADDRESS
 ENV BINARY_PATH_TESTS $BINARY_PATH_TESTS
 ENV BINARY_PATH_APP $BINARY_PATH_APP
+ENV LOG4RS_LOGS_TARGET_PATH $LOG4RS_LOGS_TARGET_PATH
 
 # Run tests and start the server app.
 CMD echo "config for tests: " && cat config_for_tests.json && \
     echo "testing config: " && cat testing_config.json && \
     echo "live config: " && cat config.json && \
     $BINARY_PATH_TESTS && \
-    $BINARY_PATH_APP --config config.json --address $SERVER_ADDRESS
+    $BINARY_PATH_APP --config config.json \
+                     --address $SERVER_ADDRESS \
+                     --log4rs-logs-file $LOG4RS_LOGS_TARGET_PATH
